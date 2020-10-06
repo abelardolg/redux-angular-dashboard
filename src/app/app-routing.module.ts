@@ -7,14 +7,14 @@ import { dashboardRoutes } from './dashboard/dashboard.routes';
 import { AuthGuard } from './service/auth.guard';
 
 const routes: Routes = [
-    {path: 'login', component: LoginComponent},
-    {path: 'register', component: RegisterComponent},
+    {path: 'login', component: LoginComponent}
+    , {path: 'register', component: RegisterComponent},
     {
-        path: '', component: DashboardComponent,
-        children: dashboardRoutes
+        path: '', component: DashboardComponent
+        , children: dashboardRoutes
         , canActivate: [ AuthGuard ]
-    },
-    {path: '**', redirectTo: ''}
+    }
+    , {path: '**', redirectTo: ''}
 ];
 
 @NgModule ({
