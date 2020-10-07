@@ -4,10 +4,10 @@ import { AngularFireAuth } from '@angular/fire/auth';
 import { AngularFirestore } from '@angular/fire/firestore';
 
 import { Store } from '@ngrx/store';
-import { Subscription } from 'rxjs';
+import { Subscription, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import * as authActions from '../auth/auth.action';
+import * as authActions from '../actions/auth.action';
 import { AppState } from '../app.reducer';
 import { AuthUser } from '../models/authUser.model';
 
@@ -17,30 +17,37 @@ import { AuthUser } from '../models/authUser.model';
 })
 export class AuthService {
 
+  private _authUser: AuthUser;
+
+  get authUser(): AuthUser {
+    return { ...this._authUser };
+  }
   authUserSubscription: Subscription;
 
   constructor(private auth: AngularFireAuth,
               private fireStore: AngularFirestore,
               private store: Store<AppState>) { }
 
-  authListener() {
+  authListener(): Subscription {
     return this.auth.authState.subscribe(firebaseUser => {
       if (firebaseUser) {
         // Sí existe
         this.authUserSubscription = this.fireStore.doc(`${firebaseUser.uid}/usuario`).valueChanges()
         .subscribe((firestoreUser: any) => {
           const authUser = AuthUser.fromFirestore(firestoreUser);
+          this._authUser = authUser;
           this.store.dispatch(authActions.setAuthUser({authUser}));
         });
       } else {
         // No existe
+        this._authUser = null;
         this.authUserSubscription.unsubscribe();
         this.store.dispatch(authActions.unsetAuthUser());
       }
     });
   }
 
-  registerUser(name: string, email: string, password: string){
+  registerUser(name: string, email: string, password: string): Promise<firebase.auth.UserCredential | void> {
     console.log(name);
     return this.auth.createUserWithEmailAndPassword(email, password)
     .then(({user}) => {
@@ -48,18 +55,18 @@ export class AuthService {
 
       return this.fireStore.doc(`${user.uid}/usuario`).set({...newUser});
 
-    })
+    });
   }
 
-  logUserIn(email: string, password: string) {
+  logUserIn(email: string, password: string): Promise<firebase.auth.UserCredential> {
     return this.auth.signInWithEmailAndPassword(email, password);
   }
 
-  logout() {
+  logout(): Promise<void> {
     return this.auth.signOut();
   }
 
-  isAuth() {
+  isAuth(): Observable<boolean> {
     return this.auth.authState.pipe(
       map(user => user !== null)
     );

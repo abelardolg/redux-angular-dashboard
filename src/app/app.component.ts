@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
-import { AngularFirestore } from '@angular/fire/firestore';
-import { AuthService } from './service/auth.service';
+import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-root',

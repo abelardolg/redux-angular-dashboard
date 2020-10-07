@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import Swal from 'sweetalert2';
 
-import { AuthService } from '../../service/auth.service';
+import { AuthService } from '../../services/auth.service';
 import { AppState } from '../../app.reducer';
 
 import * as ui from '../../shared/ui.actions';
@@ -42,25 +42,18 @@ export class LoginComponent implements OnInit, OnDestroy {
                       });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.isLoading$.unsubscribe();
   }
 
-  logUserIn() {
+  logUserIn(): void {
     if (this.loginForm.invalid) { return; }
-    /*Swal.fire({
-      title: 'Comprobando identidad',
-      text: 'Estamos comprobando si Ud. tiene permisos para acceder al panel de control...',
-      onBeforeOpen: () => {
-        Swal.showLoading();
-      }
-    });*/
+
     this.store.dispatch(ui.isLoading());
 
     const {email, password} = this.loginForm.value;
     this.authService.logUserIn(email, password)
     .then(credentials => {
-      // Swal.close();
       this.store.dispatch(ui.stopLoading());
       this.router.navigate(['/']);
     }).catch(err => {

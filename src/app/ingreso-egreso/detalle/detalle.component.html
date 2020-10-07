@@ -15,11 +15,19 @@
                     </thead>
 
                     <tbody>
-                        <tr>
-                            <td>Descripción</td>
-                            <td>Monto</td>
-                            <td>Tipo</td>
-                            <td>acciones</td>
+
+                        <tr *ngFor="let ingresoEgreso of ingresosEgresosColeccion | orderIngresoEgreso">
+                            <td> {{ ingresoEgreso.description }} </td>
+                            <td> {{ ingresoEgreso.amount }} </td>
+                            <td [class.text-success]="ingresoEgreso.operationType === IngresoEgresoEnum.INGRESO" [class.text-danger]="ingresoEgreso.operationType === IngresoEgresoEnum.EGRESO">
+                                {{ ingresoEgreso.operationType }}
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-danger" (click)="delete(ingresoEgreso.uid)">
+                                    <i class="fa fa-trash"></i>
+                                        Borrar
+                                </button>
+                            </td>
                         </tr>
                     </tbody>
 

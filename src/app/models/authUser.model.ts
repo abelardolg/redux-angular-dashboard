@@ -1,7 +1,7 @@
 
 export class AuthUser {
 
-    static fromFirestore ({uid, name, email}) {
+    static fromFirestore({uid, name, email}): AuthUser {
         return new AuthUser(uid, name, email);
     }
 
